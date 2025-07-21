@@ -62,6 +62,8 @@
 #include "densityfittingoptions.h"
 #include "densityfittingoutputprovider.h"
 
+#include "gromacs/selection/indexutil.h"
+
 namespace gmx
 {
 
