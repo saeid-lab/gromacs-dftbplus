@@ -1,4 +1,74 @@
 
+# How to use this fork
+
+This is a fork from  [tomaskubar](https://github.com/tomaskubar/gromacs-dftbplus) with a couple of modifications.
+This code is tested on Ubuntu Ubuntu 22.04.5 LTS with g++ 11.4.0 and is pretty dependent on the right version of requirements and is not compatible with latest versions as of today:
+✅ Works with [Plumed 2.6.6](https://github.com/plumed/plumed2/releases/tag/v2.6.6)
+❌ Doesn't work with Plumed 2.9.3
+
+✅ Works with [DFTB+ 21.1](https://github.com/dftbplus/dftbplus/releases/tag/21.1)
+❌ Doesn't work with DFTB+ 24.1
+
+## Compilation
+Probably there are other ways to make this code work, but the following setup has worked for me.  Before start compiling Gromacs, make sure you have compiled **right versions** of Plumed and DFTB+ on your computer (precompiled versions don't work).
+### Forked Gromacs:
+
+    git clone https://github.com/saeid-lab/gromacs-dftbplus.git
+We leave it here for the moment.
+
+### Plumed:
+Extracting the source and :
+
+    ./configure --enable-modules=all --prefix=/path/to/install --enable-shared
+    make
+    make install
+
+After a successful compilation, you must make 3 symlinks of *Plumed.cmake.shared*, *Plumed.h*, and *Plumed.inc* in the root directory of cloned Gromacs code:
+🛑 Please note, the code is already patched with Plumed and there is no need to run `patch -p`.
+
+    cd gromacs-dftbplus
+    
+    ln -s Plumed.cmake /path/to/install/lib/plumed/src/lib/Plumed.cmake.shared
+    ln -s Plumed.h /path/to/install/include/plumed/wrapper/Plumed.h
+    ln -s Plumed.inc /path/to/install/lib/plumed/src/lib/Plumed.inc
+
+### DFTB+:
+Extracting the source:
+Run: `/utils/get_opt_externals ALL` to get dispersion correction D3.
+
+    mkdir build && cd build
+    cmake .. -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=path/to/install -DWITH_API=ON   -DWITH_DFTD3=ON -DWITH_OMP=ON
+    make
+    make install
+
+Going back to Gromacs source directory:
+
+    mkdir build && cd build
+    cmake .. -DGMX_BUILD_OWN_FFTW=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_INSTALL_PREFIX=/path/to/install -DGMX_DOUBLE=ON -DGMX_OPENMP=ON -DGMX_PLUMED=ON -DGMX_QMMM_PROGRAM=dftbplus -DGMX_QMMM_DFTBPLUS_LIB=/dftbplus/path/build/lib  -DBUILD_TESTING=OFF -DCMAKE_EXE_LINKER_FLAGS="-L/usr/lib/x86_64-linux-gnu/openblas-pthread  -lopenblas" -DGMX_INSTALL_NBLIB_API:BOOL=OFF
+    make
+
+
+🔎 If you get linking error(s) like the following:
+
+    /usr/bin/ld: /path/to/dftbplust/lib/libdftbplus.a(lapackroutines.f90.o): undefined reference to symbol 'sgesvd_'
+    /usr/bin/ld: /lib/x86_64-linux-gnu/libopenblas.so.0: error adding symbols: DSO missing from command line
+    collect2: error: ld returned 1 exit status
+    make[2]: *** [src/programs/CMakeFiles/gmx.dir/build.make:103: bin/gmx_d] Error 1
+    make[1]: *** [CMakeFiles/Makefile2:3239: src/programs/CMakeFiles/gmx.dir/all] Error 2
+    make[1]: *** Waiting for unfinished jobs....
+
+Simply:  `vim gromacs-dftbplus/build/src/programs/CMakeFiles/gmx.dir`
+and add `-lopenblas` at the end of this file.
+
+You can try once more by `make` and `make install`
+
+Enjory!
+
+> Special thanks to Tomáš Kubař for helping me make this work
+
+
+
+
                Welcome to the official version of GROMACS!
 
 If you are familiar with Unix, it should be fairly trivial to compile and
