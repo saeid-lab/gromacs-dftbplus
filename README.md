@@ -64,7 +64,7 @@ and add `-lopenblas` at the end of this file.
 
 You can try once more by `make` and `make install`
 
-Enjory!
+Enjoy!
 
 > Special thanks to Tomáš Kubař for helping me make this work
 
