@@ -3,6 +3,7 @@
 
 This is a fork from  [tomaskubar](https://github.com/tomaskubar/gromacs-dftbplus) with a couple of modifications.
 This code is tested on Ubuntu Ubuntu 22.04.5 LTS with g++ 11.4.0 and is pretty dependent on the right version of requirements and is not compatible with latest versions as of today:
+
 ✅ Works with [Plumed 2.6.6](https://github.com/plumed/plumed2/releases/tag/v2.6.6)
 ❌ Doesn't work with Plumed 2.9.3
 
@@ -24,17 +25,18 @@ Extracting the source and :
     make install
 
 After a successful compilation, you must make 3 symlinks of *Plumed.cmake.shared*, *Plumed.h*, and *Plumed.inc* in the root directory of cloned Gromacs code:
+
 🛑 Please note, the code is already patched with Plumed and there is no need to run `patch -p`.
 
     cd gromacs-dftbplus
     
-    ln -s Plumed.cmake /path/to/install/lib/plumed/src/lib/Plumed.cmake.shared
-    ln -s Plumed.h /path/to/install/include/plumed/wrapper/Plumed.h
-    ln -s Plumed.inc /path/to/install/lib/plumed/src/lib/Plumed.inc
+    ln -s /path/to/install/lib/plumed/src/lib/Plumed.cmake.shared Plumed.cmake 
+    ln -s /path/to/install/include/plumed/wrapper/Plumed.h Plumed.h
+    ln -s /path/to/install/lib/plumed/src/lib/Plumed.inc Plumed.inc 
 
 ### DFTB+:
 Extracting the source:
-Run: `/utils/get_opt_externals ALL` to get dispersion correction D3.
+Run: `python /utils/get_opt_externals ALL` to get dispersion correction D3.
 
     mkdir build && cd build
     cmake .. -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=path/to/install -DWITH_API=ON   -DWITH_DFTD3=ON -DWITH_OMP=ON
@@ -57,7 +59,7 @@ Going back to Gromacs source directory:
     make[1]: *** [CMakeFiles/Makefile2:3239: src/programs/CMakeFiles/gmx.dir/all] Error 2
     make[1]: *** Waiting for unfinished jobs....
 
-Simply:  `vim gromacs-dftbplus/build/src/programs/CMakeFiles/gmx.dir`
+Simply:  `vim gromacs-dftbplus/build/src/programs/CMakeFiles/gmx.dir/link.txt`
 and add `-lopenblas` at the end of this file.
 
 You can try once more by `make` and `make install`
@@ -66,6 +68,7 @@ Enjory!
 
 > Special thanks to Tomáš Kubař for helping me make this work
 
+---
 
 
 
